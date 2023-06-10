@@ -106,6 +106,7 @@ function myFunc(evn) {
     }
 
     console.log(evn.clientX)
+    console.log('aaaaaaaa')
 
     if(ids > imagesCont.offsetWidth/2+imagesCont.offsetWidth-fixnum || ids < -(imagesCont.offsetWidth/2+imagesCont.offsetWidth-fixnum)) {
         document.querySelector('.slider').removeEventListener('mousemove', myFunc)
