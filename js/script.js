@@ -87,36 +87,68 @@ clickCircule(circule)
 
 let sliderCont = document.querySelector('.sliderContainer');
 
-let windowNum;
-
-setInterval(() => {
-    windowNum = windowNum
-}, 0)
 
 let scrollNum;
+console.log(imagesCont)
+let ids = 1;
+let trueScroll = false;
+let lastNum;
+let fixnum = 3;
+function myFunc(evn) {
+    if((imgIndex !== 0 || ids > 0) && evn.clientX > lastNum) {
+        ids-=fixnum;
+        lastNum = evn.clientX-fixnum;
+        imagesCont.style.transform = `translateX(calc(${(-imgIndex * 100)}% + ${(-ids)}px))`;   
+    } else if((imgIndex !== images.length-1 || ids < 0) && evn.clientX < lastNum) {
+        ids+= fixnum;
+        lastNum = evn.clientX+fixnum;
+        imagesCont.style.transform = `translateX(calc(${(-imgIndex * 100)}% + ${(-ids)}px))`; 
+    }
+
+    console.log(evn.clientX)
+
+    if(ids > imagesCont.offsetWidth/2+imagesCont.offsetWidth-fixnum || ids < -(imagesCont.offsetWidth/2+imagesCont.offsetWidth-fixnum)) {
+        document.querySelector('.slider').removeEventListener('mousemove', myFunc)
+    }
+
+    if(ids > imagesCont.offsetWidth/5) {
+        trueScroll = 'goRight';
+    } else if(ids < -imagesCont.offsetWidth/5){
+        trueScroll = 'goLeft';
+    } else {
+        trueScroll = 'stop';
+    }
+}
 
 sliderCont.addEventListener('mousedown', function(evn) {
-    imagesCont.style.cursor = 'grabbing';
-    scrollNum = evn.clientX;
+    if(document.body.offsetWidth > 550) {
+        imagesCont.style.cursor = 'grabbing';
+        scrollNum = evn.clientX;
+        lastNum = scrollNum;
+        document.querySelector('.slider').addEventListener('mousemove', myFunc)
+    }    
 })
 
-sliderCont.addEventListener('mouseup', function(evn) {
-    imagesCont.style.cursor = 'grab';
-    if(imgIndex !== 0) {
-        if(scrollNum+100 < evn.clientX) {
-            imgIndex--;
-            imagesCont.style.transform = `translateX(${-imgIndex * 100}%)`;
-            drowCircule();
-            ditablishLR();
-        }
-    }     
-    if(imgIndex < images.length-1) {
-        if(scrollNum-100 > evn.clientX){
+document.querySelector('.slider').addEventListener('mouseup', function(evn) {
+    if(document.body.offsetWidth > 550) {
+
+        imagesCont.style.cursor = 'grab';
+        console.log(imgIndex)
+        document.querySelector('.slider').removeEventListener('mousemove', myFunc); 
+        ids = 1;
+
+        if(trueScroll === 'goRight') {
             imgIndex++;
-            imagesCont.style.transform = `translateX(${-imgIndex * 100}%)`;
             drowCircule();
             ditablishLR();
+        } else if(trueScroll === 'goLeft') {
+            imgIndex--;
+            drowCircule();
+            ditablishLR();
+        } else {
+            imgIndex = imgIndex;
         }
-    }   
-    
+        
+        imagesCont.style.transform = `translateX(${-imgIndex * 100}%)`;
+    }    
 })
