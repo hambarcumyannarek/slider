@@ -91,30 +91,28 @@ let sliderCont = document.querySelector('.sliderContainer');
 let scrollNum;
 console.log(imagesCont)
 let ids = 1;
-let trueScroll = false;
+let trueScroll;
 let lastNum;
-let fixnum = 3;
+let lastX;
+let fr = 1;
 function myFunc(evn) {
-    if((imgIndex !== 0 || ids > 0) && evn.clientX > lastNum) {
-        ids-=fixnum;
-        lastNum = evn.clientX-fixnum;
-        imagesCont.style.transform = `translateX(calc(${(-imgIndex * 100)}% + ${(-ids)}px))`;   
-    } else if((imgIndex !== images.length-1 || ids < 0) && evn.clientX < lastNum) {
-        ids+= fixnum;
-        lastNum = evn.clientX+fixnum;
-        imagesCont.style.transform = `translateX(calc(${(-imgIndex * 100)}% + ${(-ids)}px))`; 
+    if((imgIndex !== 0 || fr > 1) && evn.clientX > lastNum) {
+        fr += lastX-evn.clientX;
+        imagesCont.style.transform = `translateX(calc(${(-imgIndex * 100)}% + ${(-fr)}px))`;   
+    } else if((imgIndex !== images.length-1 || fr < 0) && evn.clientX < lastNum) {
+        fr += lastX-evn.clientX;
+        imagesCont.style.transform = `translateX(calc(${(-imgIndex * 100)}% + ${-fr}px))`; 
     }
 
-    console.log(evn.clientX)
-    console.log('aaaaaaaa')
+    lastX = evn.clientX;
 
-    if(ids > imagesCont.offsetWidth/2+imagesCont.offsetWidth-fixnum || ids < -(imagesCont.offsetWidth/2+imagesCont.offsetWidth-fixnum)) {
+    if(fr > imagesCont.offsetWidth/2+imagesCont.offsetWidth || fr < -(imagesCont.offsetWidth/2+imagesCont.offsetWidth)) {
         document.querySelector('.slider').removeEventListener('mousemove', myFunc)
     }
 
-    if(ids > imagesCont.offsetWidth/5) {
+    if(fr > imagesCont.offsetWidth/5) {
         trueScroll = 'goRight';
-    } else if(ids < -imagesCont.offsetWidth/5){
+    } else if(fr < -imagesCont.offsetWidth/5){
         trueScroll = 'goLeft';
     } else {
         trueScroll = 'stop';
@@ -126,17 +124,17 @@ sliderCont.addEventListener('mousedown', function(evn) {
         imagesCont.style.cursor = 'grabbing';
         scrollNum = evn.clientX;
         lastNum = scrollNum;
+        lastX = scrollNum;
         document.querySelector('.slider').addEventListener('mousemove', myFunc)
     }    
 })
 
 document.querySelector('.slider').addEventListener('mouseup', function(evn) {
     if(document.body.offsetWidth > 550) {
-
+        fr = 1;
         imagesCont.style.cursor = 'grab';
         console.log(imgIndex)
         document.querySelector('.slider').removeEventListener('mousemove', myFunc); 
-        ids = 1;
 
         if(trueScroll === 'goRight') {
             imgIndex++;
@@ -151,5 +149,6 @@ document.querySelector('.slider').addEventListener('mouseup', function(evn) {
         }
         
         imagesCont.style.transform = `translateX(${-imgIndex * 100}%)`;
+        console.log(fr)
     }    
 })
